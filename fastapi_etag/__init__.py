@@ -1,1 +1,1 @@
-from fastapi_etag.route import make_route_class, Registry  # noqa: F401
+from fastapi_etag.dependency import Etag, add_exception_handler  # noqa: F401

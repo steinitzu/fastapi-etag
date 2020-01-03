@@ -5,6 +5,7 @@ Basic etag support for FastAPI, allowing you to benefit from conditional caching
 This does not generate etags that are a hash of the response content, but instead lets you pass in a custom etag generating function per endpoint that is called before executing the route function.  
 This lets you bypass expensive API calls when client includes a matching etag in the `If-None-Match` header, in this case your endpoint is never called, instead returning a 304 response telling the client nothing has changed.
 
+The etag logis is implemented with a fastapi dependency that you can add to your routes or entire routers.  
 The etag logic is implement using a custom `APIRoute` class that you can add to individual routers or a whole app.  
 
 Here's how you use it:
@@ -14,25 +15,17 @@ Here's how you use it:
 
 from fastapi import FastAPI
 from starlette.requests import Request
-
-from fastapi_etag import make_route_class
-
-
-EtagRoute = make_route_class()
+from fastapi_etag import Etag, add_exception_handler
 
 app = FastAPI()
-app.router.route_class = EtagRoute
+add_exception_handler(app)
 
 
 async def get_hello_etag(request: Request):
-    name = request.path_params.get("name")
-    if not name:
-        return None
     return f"etagfor{name}"
 
 
-@app.get("/hello/{name}")
-@EtagRoute.add(get_hello_etag)
+@app.get("/hello/{name}", dependencies=[Etag(get_hello_etag)])
 def hello(name: str):
     return {"hello": name}
 
@@ -43,18 +36,10 @@ Run this example with `uvicorn: uvicorn --port 8090 app:app`
 Let's break it down:
 
 ```python3
-EtagRoute = make_route_class()
+add_exception_handler(app)
 ```
 
-Here we create a custom etag route class. The class contains a registry of endpoints
-that have etag support.
-You can create many classes like this within your application if you want separate endpoint registries.
-
-```python3
-app.router.route_class = EtagRoute
-```
-This tells fastapi to use the custom route class on all routes in the app.  
-You can alternatively set this on individual routers as well.  
+The dependency raises a special `CacheHit` exception to exit early when there's a an etag match, this adds a standard exception handler to the app to generate a correct 304 response from the exception.
 
 ```python3
 async def get_hello_etag(request: Request):
@@ -69,15 +54,14 @@ Only requirement is that it accepts one argument (request) and that it returns e
 
 
 ```python3
-@app.get("/hello/{name}")
-@EtagRoute.add(get_hello_etag)
+@app.get("/hello/{name}", dependencies=[Etag(get_hello_etag)])
 def hello(name: str):
 	...
 ```
 
-The decorator adds the "/hello" endpoint to the registry of etag routes and specifies that the `get_hello_etag` should be used to generate etags for it. (no etag logic is added unless you do this)  
-Note that by default your etag is converted to a weak etag, that means it is wrapped in `'W/"{your etag}"'`  
-If you'd like to use strong etags, you can disable this by passing keyword argument `weak=False` to the decorator.
+The `Etag` dependency is called like any fastapi dependency.
+It always adds the etag returned by your etag gen function to the response.  
+If client passes a matching etag in the `If-None-Match` header, it will raise a `CacheHit` exception which triggers a 304 response before calling your endpoint.
 
 
 Now try it with curl:
