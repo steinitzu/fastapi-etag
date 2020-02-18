@@ -130,3 +130,6 @@ dmypy.json
 
 # dummy scripts and mockups
 hacks/
+
+# PyCharm project settings
+/.idea
