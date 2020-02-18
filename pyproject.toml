@@ -9,7 +9,6 @@ homepage = "https://github.com/steinitzu/fastapi-etag"
 readme = "README.md"
 classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
-  "Framework :: FastAPI",
   "Intended Audience :: Developers",
   "Topic :: Internet :: WWW/HTTP",
   "Environment :: Web Environment",
