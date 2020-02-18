@@ -17,7 +17,7 @@ classifiers = [
 
 [tool.poetry.urls]
 "Issue tracker" = "https://github.com/steinitzu/fastapi-etag/issues"
-"Code" = "https://github.com/steinitzu/fastapi-etag",
+"Code" = "https://github.com/steinitzu/fastapi-etag"
 
 [tool.poetry.dependencies]
 python = "^3.7"
