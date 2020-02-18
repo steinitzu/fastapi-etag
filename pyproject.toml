@@ -1,9 +1,23 @@
 [tool.poetry]
 name = "fastapi-etag"
 version = "0.2.0"
-description = ""
+description = "Convenience library for working with etags in fastapi"
 authors = ["Steinthor Palsson <steini90@gmail.com>"]
 license = "MIT"
+repository = "https://github.com/steinitzu/fastapi-etag.git"
+homepage = "https://github.com/steinitzu/fastapi-etag"
+readme = "README.md"
+classifiers = [
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Framework :: FastAPI",
+  "Intended Audience :: Developers",
+  "Topic :: Internet :: WWW/HTTP",
+  "Environment :: Web Environment",
+]
+
+[tool.poetry.urls]
+"Issue tracker" = "https://github.com/steinitzu/fastapi-etag/issues"
+"Code" = "https://github.com/steinitzu/fastapi-etag"
 
 [tool.poetry.dependencies]
 python = "^3.7"
