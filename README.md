@@ -95,5 +95,4 @@ It now returns no content, only the 304 telling us nothing has changed.
 
 # TODO
 
-* Deploy to pypi
 * Tests

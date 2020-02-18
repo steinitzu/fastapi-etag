@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fastapi-etag"
-version = "0.2.0"
+version = "0.2.1"
 description = "Convenience library for working with etags in fastapi"
 authors = ["Steinthor Palsson <steini90@gmail.com>"]
 license = "MIT"
