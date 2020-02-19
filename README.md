@@ -93,6 +93,11 @@ etag: W/"etagforbob"
 It now returns no content, only the 304 telling us nothing has changed.
 
 
+# Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md)
+
+
 # TODO
 
 * Tests
