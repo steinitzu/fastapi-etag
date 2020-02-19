@@ -5,8 +5,7 @@ Basic etag support for FastAPI, allowing you to benefit from conditional caching
 This does not generate etags that are a hash of the response content, but instead lets you pass in a custom etag generating function per endpoint that is called before executing the route function.  
 This lets you bypass expensive API calls when client includes a matching etag in the `If-None-Match` header, in this case your endpoint is never called, instead returning a 304 response telling the client nothing has changed.
 
-The etag logis is implemented with a fastapi dependency that you can add to your routes or entire routers.  
-The etag logic is implement using a custom `APIRoute` class that you can add to individual routers or a whole app.  
+The etag logis is implemented with a fastapi dependency that you can add to your routes or entire routers.
 
 Here's how you use it:
 
