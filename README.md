@@ -53,7 +53,7 @@ Only requirement is that it accepts one argument (request) and that it returns e
 
 
 ```python3
-@app.get("/hello/{name}", dependencies=[Etag(get_hello_etag)])
+@app.get("/hello/{name}", dependencies=[Depends(Etag(get_hello_etag))])
 def hello(name: str):
 	...
 ```
