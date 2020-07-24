@@ -17,23 +17,47 @@ def hello_endpoint(app):
     async def hello(name: str):
         return {"hello": name}
 
+    @app.get("/no-etag", dependencies=[Depends(Etag(lambda x: None))])
+    async def get_missing_etag():
+        """
+        This endpoint has no stored etag
+        """
+        return {"a": "b"}
+
 
 def test_example_produces_etag(client):
     r: Response = client.get("/hello/foo")
     assert r.status_code == 200
-    assert r.headers == {'content-length': '15', 'content-type': 'application/json', 'etag': 'W/"etagforfoo"'}
+    assert r.headers == {
+        "content-length": "15",
+        "content-type": "application/json",
+        "etag": 'W/"etagforfoo"',
+    }
     assert r.json() == {"hello": "foo"}
 
 
 def test_example_produces_304(client):
-    r: Response = client.get("/hello/foo", headers={'If-None-Match': 'W/"etagforfoo"'})
+    r: Response = client.get("/hello/foo", headers={"If-None-Match": 'W/"etagforfoo"'})
     assert r.status_code == 304
-    assert r.headers == {'etag': 'W/"etagforfoo"'}
+    assert r.headers == {"etag": 'W/"etagforfoo"'}
     assert r.text == ""
 
 
 def test_example_wrong_etag_produces_200(client):
-    r: Response = client.get("/hello/foo", headers={'If-None-Match': 'not-the-correct-etag'})
+    r: Response = client.get(
+        "/hello/foo", headers={"If-None-Match": "not-the-correct-etag"}
+    )
     assert r.status_code == 200
-    assert r.headers == {'content-length': '15', 'content-type': 'application/json', 'etag': 'W/"etagforfoo"'}
+    assert r.headers == {
+        "content-length": "15",
+        "content-type": "application/json",
+        "etag": 'W/"etagforfoo"',
+    }
     assert r.json() == {"hello": "foo"}
+
+
+def test_example_no_etag_produces_200(client):
+    r: Response = client.get("/no-etag")
+    assert r.status_code == 200
+    assert r.headers == {"content-length": "9", "content-type": "application/json"}
+    assert r.json() == {"a": "b"}

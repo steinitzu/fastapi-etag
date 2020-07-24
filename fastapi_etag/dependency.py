@@ -34,6 +34,8 @@ class Etag:
         modified = self.is_modified(etag, request)
         if etag:
             headers = {"etag": etag}
+        else:
+            headers = {}
         if not modified:
             raise CacheHit(304, headers=headers)
         response.headers.update(headers)
