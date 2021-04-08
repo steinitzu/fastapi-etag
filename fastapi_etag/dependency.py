@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, MutableMapping
 
 from fastapi import HTTPException, FastAPI
 from starlette.requests import Request
@@ -13,9 +13,12 @@ class CacheHit(HTTPException):
 
 
 class Etag:
-    def __init__(self, etag_gen: EtagGen, weak=True):
+    def __init__(
+        self, etag_gen: EtagGen, weak=True, extra_headers: MutableMapping = None
+    ):
         self.etag_gen = etag_gen
         self.weak = weak
+        self.extra_headers = extra_headers
 
     def is_modified(self, etag: Optional[str], request: Request):
         if not etag:
@@ -36,6 +39,8 @@ class Etag:
             headers = {"etag": etag}
         else:
             headers = {}
+        if self.extra_headers:
+            headers.update(self.extra_headers)
         if not modified:
             raise CacheHit(304, headers=headers)
         response.headers.update(headers)

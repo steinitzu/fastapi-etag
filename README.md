@@ -1,5 +1,7 @@
 # fastapi-etag
 
+## Quickstart
+
 Basic etag support for FastAPI, allowing you to benefit from conditional caching in web browsers and reverse-proxy caching layers.
 
 This does not generate etags that are a hash of the response content, but instead lets you pass in a custom etag generating function per endpoint that is called before executing the route function.  
@@ -91,12 +93,31 @@ etag: W/"etagforbob"
 
 It now returns no content, only the 304 telling us nothing has changed.
 
+### Add response headers
 
-# Contributing
+If you want to add some extra response headers to the 304 and regular response,
+you can add the `extra_headers` argument with a dict of headers:
+
+```
+@app.get(
+    "/hello/{name}",
+    dependencies=[
+        Depends(
+            Etag(
+                get_hello_etag,
+                extra_headers={"Cache-Control": "public, max-age: 30"},
+            )
+        )
+    ],
+)
+def hello(name: str):
+	...
+```
+
+This will add the `cache-control` header on all responses from the endpoint.
+
+
+## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md)
 
-
-# TODO
-
-* Tests
