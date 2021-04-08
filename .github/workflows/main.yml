@@ -15,10 +15,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - uses: Gr1N/setup-poetry@v4
       - run: poetry install
-      - run: black --check fastapi_etag
-      - run: black --check tests
-      - run: mypy fastapi_etag
-      - run: mypy tests
+      - run: poetry run black --check fastapi_etag
+      - run: poetry run black --check tests
+      - run: poetry run mypy fastapi_etag
+      - run: poetry run mypy tests
       - run: poetry run flake8 fastapi_etag
       - run: poetry run flake8 tests
       - run: poetry run pytest -v --cov=fastapi_etag --cov-branch tests/
