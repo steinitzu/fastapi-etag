@@ -1,5 +1,4 @@
-from fastapi import FastAPI, Depends
-from starlette.requests import Request
+from fastapi import Depends, FastAPI, Request
 
 from fastapi_etag.dependency import Etag, add_exception_handler
 

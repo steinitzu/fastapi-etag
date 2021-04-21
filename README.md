@@ -14,8 +14,7 @@ Here's how you use it:
 ```python3
 # app.py
 
-from fastapi import FastAPI
-from starlette.requests import Request
+from fastapi import Depends, FastAPI, Request
 from fastapi_etag import Etag, add_exception_handler
 
 app = FastAPI()

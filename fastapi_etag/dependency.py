@@ -1,20 +1,18 @@
-from typing import Optional, MutableMapping
-
-from fastapi import HTTPException, FastAPI
-from starlette.requests import Request
-from starlette.responses import Response
 from inspect import iscoroutinefunction
+from typing import Any, Dict, MutableMapping, Optional
+
+from fastapi import FastAPI, HTTPException, Request, Response
 
 from fastapi_etag.types import EtagGen
 
 
 class CacheHit(HTTPException):
-    pass
+    ...
 
 
 class Etag:
     def __init__(
-        self, etag_gen: EtagGen, weak=True, extra_headers: MutableMapping = None
+        self, etag_gen: EtagGen, weak: bool = True, extra_headers: MutableMapping = None
     ):
         self.etag_gen = etag_gen
         self.weak = weak
@@ -32,23 +30,21 @@ class Etag:
             if iscoroutinefunction(self.etag_gen)
             else self.etag_gen(request)
         )
-        if etag and self.weak:
-            etag = f'W/"{etag}"'
-        modified = self.is_modified(etag, request)
-        if etag:
-            headers = {"etag": etag}
-        else:
-            headers = {}
+        headers: Dict[str, Any] = {}
         if self.extra_headers:
             headers.update(self.extra_headers)
-        if not modified:
-            raise CacheHit(304, headers=headers)
+        if etag:
+            if self.weak:
+                etag = f'W/"{etag}"'
+            headers.update(etag=etag)
+            if not self.is_modified(etag, request):
+                raise CacheHit(304, headers=headers)
         response.headers.update(headers)
         return etag
 
 
 async def etag_exception_handler(request: Request, exc: CacheHit):
-    return Response("", 304, headers=exc.headers)
+    return Response(status_code=304, headers=exc.headers)
 
 
 def add_exception_handler(app: FastAPI):
