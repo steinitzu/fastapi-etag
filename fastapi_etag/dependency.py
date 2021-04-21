@@ -1,5 +1,5 @@
 from inspect import iscoroutinefunction
-from typing import Any, Dict, MutableMapping, Optional
+from typing import MutableMapping, Optional
 
 from fastapi import FastAPI, HTTPException, Request, Response
 
@@ -30,9 +30,7 @@ class Etag:
             if iscoroutinefunction(self.etag_gen)
             else self.etag_gen(request)
         )
-        headers: Dict[str, Any] = {}
-        if self.extra_headers:
-            headers.update(self.extra_headers)
+        headers = dict(self.extra_headers or {})
         if etag:
             if self.weak:
                 etag = f'W/"{etag}"'
