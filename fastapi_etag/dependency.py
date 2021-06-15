@@ -18,7 +18,7 @@ class PreconditionFailed(HTTPException):
 
 class HeaderType(Enum):
     IF_MATCH = "if-match"
-    IF_NON_MATCH = "if-non-match"
+    IF_NON_MATCH = "if-none-match"
 
 
 class Etag:
@@ -72,10 +72,14 @@ async def etag_cache_hit_exception_handler(request: Request, exc: CacheHit):
     return Response("", 304, headers=exc.headers)
 
 
-async def etag_precondition_failed_exception_handler(request: Request, exc: PreconditionFailed):
+async def etag_precondition_failed_exception_handler(
+    request: Request, exc: PreconditionFailed
+):
     return Response("", 412, headers=exc.headers)
 
 
 def add_exception_handler(app: FastAPI):
     app.add_exception_handler(CacheHit, etag_cache_hit_exception_handler)
-    app.add_exception_handler(PreconditionFailed, etag_precondition_failed_exception_handler)
+    app.add_exception_handler(
+        PreconditionFailed, etag_precondition_failed_exception_handler
+    )

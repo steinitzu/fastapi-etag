@@ -74,9 +74,7 @@ def test_if_match_wrong_etag_produces_412(client):
 
 
 def test_if_match_proper_etag_produces_200(client):
-    r: Response = client.get(
-        "/hello/foo", headers={"If-Match": 'W/"etagforfoo"'}
-    )
+    r: Response = client.get("/hello/foo", headers={"If-Match": 'W/"etagforfoo"'})
     assert r.status_code == 200
     assert r.headers == {
         "content-length": "15",
