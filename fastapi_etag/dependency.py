@@ -18,7 +18,7 @@ class PreconditionFailed(HTTPException):
 
 class HeaderType(Enum):
     IF_MATCH = "if-match"
-    IF_NON_MATCH = "if-none-match"
+    IF_NONE_MATCH = "if-none-match"
 
 
 class Etag:
@@ -47,7 +47,7 @@ class Etag:
         header_type: Optional[HeaderType] = None
         if request.headers.get("if-none-match") is not None:
             client_etag = request.headers.get("if-none-match")
-            header_type = HeaderType.IF_NON_MATCH
+            header_type = HeaderType.IF_NONE_MATCH
         elif request.headers.get("if-match") is not None:
             client_etag = request.headers.get("if-match")
             header_type = HeaderType.IF_MATCH
@@ -60,7 +60,7 @@ class Etag:
         if self.extra_headers:
             headers.update(self.extra_headers)
 
-        if not modified and header_type == HeaderType.IF_NON_MATCH:
+        if not modified and header_type == HeaderType.IF_NONE_MATCH:
             raise CacheHit(304, headers=headers)
         elif modified and header_type == HeaderType.IF_MATCH:
             raise PreconditionFailed(412, headers=headers)
