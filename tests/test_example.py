@@ -66,6 +66,24 @@ def test_example_wrong_etag_produces_200(client):
     assert r.json() == {"hello": "foo"}
 
 
+def test_if_match_wrong_etag_produces_412(client):
+    r: Response = client.get("/hello/foo", headers={"If-Match": 'W/"etagnotforfoo"'})
+    assert r.status_code == 412
+    assert r.headers == {"etag": 'W/"etagforfoo"'}
+    assert r.text == ""
+
+
+def test_if_match_proper_etag_produces_200(client):
+    r: Response = client.get("/hello/foo", headers={"If-Match": 'W/"etagforfoo"'})
+    assert r.status_code == 200
+    assert r.headers == {
+        "content-length": "15",
+        "content-type": "application/json",
+        "etag": 'W/"etagforfoo"',
+    }
+    assert r.json() == {"hello": "foo"}
+
+
 def test_example_no_etag_produces_200(client):
     r: Response = client.get("/no-etag")
     assert r.status_code == 200
